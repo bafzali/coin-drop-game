@@ -7,6 +7,13 @@ const fbase = require("@/firebaseConfig.js")
 
 Vue.use(Vuex)
 
+fbase.auth.onAuthStateChanged(user => {
+  if (user) {
+    store.commit("setCurrentUser", user)
+    store.dispatch("fetchUserProfile")
+  }
+})
+
 export const store = new Vuex.Store({
   state: {
     currentUser: null,
@@ -21,7 +28,11 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
-    fetchUserProfile({ commit, state }) {
+    clearData({ commit }) {
+      commit("setCurrentUser", null)
+      commit("setUserProfile", {})
+    },
+    fetchUserProfile({ commit, state }) {     
       fbase.userCollection.doc(state.currentUser.uid).get()
       .then(res => {
         commit("setUserProfile", res.data())

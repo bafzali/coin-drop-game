@@ -1,5 +1,10 @@
 <template>
   <div>
+    <transition name="fade">
+      <div v-if="performingRequest">
+        <h3>Loading...</h3>
+      </div>
+    </transition>
     <!-- Login Form -->
     <b-form @submit.prevent v-if="showLoginForm">
       <h3>Login</h3>
@@ -83,24 +88,35 @@
 
     <!-- forgot password form -->
     <b-form @submit.prevent v-if="showForgotPassword">
-      <h3>Reset Password</h3>
-      <p>We will send an email to reset your password.</p>
-      <b-form-group
-        id="reset-password-email"
-        label="Email address:"
-        label-for="reset-password-email-input"
-      >
-        <b-form-input
-          id="reset-password-email-input"
-          v-model.trim="signupForm.email"
-          type="email"
-          required
-          placeholder="Enter email"
-        ></b-form-input>
-      </b-form-group>
-      <b-button variant="primary">Reset Password</b-button>
+      <div v-if="!passwordResetSuccess">
+        <h3>Reset Password</h3>
+        <p>We will send an email to reset your password.</p>
+        <b-form-group
+          id="reset-password-email"
+          label="Email address:"
+          label-for="reset-password-email-input"
+        >
+          <b-form-input
+            id="reset-password-email-input"
+            v-model.trim="passwordResetForm.email"
+            type="email"
+            required
+            placeholder="Enter email"
+          ></b-form-input>
+        </b-form-group>
+        <b-button @click="resetPassword" variant="primary">Reset Password</b-button>
+      </div>
+      <div v-else>
+        <h3>Email Sent</h3>
+        <p>Check your email for a link to reset your password.</p>
+      </div>
       <b-button @click="toggleLoginForm" variant="primary">Back to Login</b-button>
     </b-form>
+    <transition name="fade">
+      <div v-if="errorMessage !== ''">
+        <h3>{{ errorMessage }}</h3>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -119,12 +135,19 @@ export default {
         email: "",
         password: ""
       },
+      passwordResetForm: {
+        email: ""
+      },
       showLoginForm: true,
-      showForgotPassword: false
+      showForgotPassword: false,
+      passwordResetSuccess: false,
+      performingRequest: false,
+      errorMessage: ""
     }
   },
   methods: {
     toggleLoginForm() {
+      this.errorMessage = ""
       this.showLoginForm = !this.showLoginForm
       if(this.showForgotPassword === true) {
         this.showForgotPassword = false
@@ -140,29 +163,50 @@ export default {
       }
     },
     login() {
+      this.performingRequest = true
       fbase.auth.signInWithEmailAndPassword(this.loginForm.email, this.loginForm.password)
       .then(user => {
         console.log(user.user.uid);
         this.$store.commit("setCurrentUser", user.user)
         this.$store.dispatch("fetchUserProfile")
+        this.performingRequest = false
         this.$router.push("/dashboard")
       }).catch(err => {
         console.log(err);
+        this.performingRequest = false
+        this.errorMessage = err.message
       })
     },
     signUp() {
+      this.performingRequest = true
       fbase.auth.createUserWithEmailAndPassword(this.signupForm.email, this.signupForm.password)
       .then(user => {
-        // console.log(user.user);
         fbase.userCollection.doc(user.user.uid).set({
-          userName: this.signupForm.userName
+          userName: this.signupForm.userName,
+          email: this.signupForm.email
         }).then(() => {
           this.$store.dispatch("fetchUserProfile")
+          this.performingRequest = false
           this.$router.push("/dashboard")
         })
       })
       .catch(err => {
         console.log(err);
+        this.performingRequest = false
+        this.errorMessage = err.message
+      })
+    },
+    resetPassword() {
+      this.performingRequest = true
+      fbase.auth.sendPasswordResetEmail(this.passwordResetForm.email)
+      .then(() => {
+        this.performingRequest = false
+        this.passwordResetSuccess = true
+        this.passwordResetForm.email = ""
+      }).catch(err => {
+        console.log(err);
+        this.performingRequest = false
+        this.errorMessage = err.message
       })
     }
   }
