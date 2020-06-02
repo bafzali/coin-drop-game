@@ -7,22 +7,29 @@ import "./assets/sass/index.sass"
 
 import App from "./App.vue"
 import router from "./router"
-import store from "./store"
+import { store } from "./store/index"
 
-const firebase = require("./firebaseConfig")
+const fbase = require("./firebaseConfig")
 
 Vue.use(BootstrapVue)
 
 Vue.config.productionTip = false
 
+// new Vue({
+//   router,
+//   store,
+//   render: h => h(App)
+// }).$mount("#app")
+
 // handle page reload
 let app
-firebase.auth.onAuthStateChanged(user => {
+fbase.auth.onAuthStateChanged(() => {
   if (!app) {
     app = new Vue({
+      el: "#app",
       router,
       store,
       render: h => h(App)
-    }).$mount("#app")
+    })
   }
 })
