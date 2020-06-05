@@ -1,6 +1,9 @@
 <template>
   <div class="navigation-container">
     <b-navbar toggleable="lg" type="dark" variant="info">
+      <b-navbar-brand href="">
+        <img src="../../public/img/icons8-stack-of-coins-48.png" alt="">
+      </b-navbar-brand>
       <b-navbar-brand href="/">
         Coin Drop Game
       </b-navbar-brand>
@@ -8,6 +11,11 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item href="/">Dashboard</b-nav-item>
+        </b-navbar-nav>
+        <!-- Center aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+          <b-nav-text center>You have won {{ userProfile.wins }} games out of {{ userProfile.totalGamesPlayed }} played</b-nav-text>
+
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
@@ -18,9 +26,6 @@
             </template>
             <b-dropdown-item href="/settings">
               Settings
-            </b-dropdown-item>
-            <b-dropdown-item href="/login">
-              Login
             </b-dropdown-item>
             <b-dropdown-item @click="logOut">
               Sign Out
@@ -33,9 +38,13 @@
 </template>
 
 <script>
+import { mapState } from "vuex"
 const fbase = require("../firebaseConfig")
 
 export default {
+  computed: {
+    ...mapState(["userProfile"])
+  },
   methods: {
     logOut() {
       fbase.auth.signOut().then(() => {

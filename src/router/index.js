@@ -5,6 +5,7 @@ import firebase from "firebase"
 import Dashboard from "@/views/Dashboard"
 import Login from "@/views/Login"
 import Settings from "@/views/Settings"
+import Game from "@/views/Game"
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,14 @@ const routes = [
     path: "/settings",
     name: "Settings",
     component: Settings,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: "/game",
+    name: "Game",
+    component: Game,
     meta: {
       requiresAuth: true
     }

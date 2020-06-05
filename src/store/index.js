@@ -17,7 +17,10 @@ fbase.auth.onAuthStateChanged(user => {
 export const store = new Vuex.Store({
   state: {
     currentUser: null,
-    userProfile: {}
+    userProfile: {},
+    // currentGameID: "",
+    // openGamesList: {},
+    // currentOpponent: ""
   },
   mutations: {
     setCurrentUser(state, val) {

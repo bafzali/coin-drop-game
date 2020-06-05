@@ -1,12 +1,7 @@
 <template>
   <div>
-    <transition name="fade">
-      <div v-if="performingRequest">
-        <h3>Loading...</h3>
-      </div>
-    </transition>
     <!-- Login Form -->
-    <b-form @submit.prevent v-if="showLoginForm">
+    <b-form @submit.prevent v-if="showLoginForm && !performingRequest">
       <h3>Login</h3>
       <b-form-group
         id="input-group-1"
@@ -113,6 +108,11 @@
       <b-button @click="toggleLoginForm" variant="primary">Back to Login</b-button>
     </b-form>
     <transition name="fade">
+      <div v-if="performingRequest" class="text-center">
+        <b-spinner variant="secondary" label="Spinning"></b-spinner>
+      </div>
+    </transition>
+    <transition name="fade">
       <div v-if="errorMessage !== ''">
         <h3>{{ errorMessage }}</h3>
       </div>
@@ -183,7 +183,10 @@ export default {
       .then(user => {
         fbase.userCollection.doc(user.user.uid).set({
           userName: this.signupForm.userName,
-          email: this.signupForm.email
+          wins: 0,
+          totalGamesPlayed: 0,
+          currentGameID: "",
+          friends: []
         }).then(() => {
           this.$store.dispatch("fetchUserProfile")
           this.performingRequest = false

@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
-    <h3>Dashboard</h3>
-    <p>{{ userProfile.userName }}</p>
+    <h2>Welcome, {{ userProfile.userName }}!</h2>
+    <router-link to="game">Start a New Game</router-link>
   </div>
 </template>
 
