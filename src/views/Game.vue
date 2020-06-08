@@ -67,6 +67,9 @@ export default {
       } else if (this.userOneCoins > 0) {
         this.userOneCoins--
       }
+    },
+    endTurn() {
+      
     }
   },
 }

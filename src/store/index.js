@@ -12,14 +12,28 @@ fbase.auth.onAuthStateChanged(user => {
     store.commit("setCurrentUser", user)
     store.dispatch("fetchUserProfile")
   }
+
+  // update open games as they are created
+  fbase.gameCollection.orderBy("createdOn", "desc").onSnapshot(querySnapshot => {
+    let gamesArray = []
+
+    querySnapshot.forEach(doc => {
+      let game = doc.data()
+      game.id = doc.id
+      gamesArray.push(game)
+    })
+
+    store.commit("setGames", gamesArray)
+  })
 })
 
 export const store = new Vuex.Store({
   state: {
     currentUser: null,
     userProfile: {},
-    // currentGameID: "",
-    // openGamesList: {},
+    // currentGame: {},
+    games: [],
+    // openGameIdList: [],
     // currentOpponent: ""
   },
   mutations: {
@@ -28,6 +42,13 @@ export const store = new Vuex.Store({
     },
     setUserProfile(state, val) {
       state.userProfile = val
+    },
+    setGames(state, val) {
+      if (val) {
+        state.games = val
+      } else {
+        state.games = []
+      }
     }
   },
   actions: {

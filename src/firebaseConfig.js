@@ -20,19 +20,19 @@ const auth = firebase.auth()
 const currentUser = auth.currentUser
 
 // date issue fix according to firebase
-const settings = {
-  timestampsInSnapshots: true
-}
-db.settings(settings)
+// const settings = {
+//   timestampsInSnapshots: true
+// }
+// db.settings(settings)
 
 // firebase collections
 const userCollection = db.collection("user")
-const postCollection = db.collection("post")
+const gameCollection = db.collection("game")
 
 export {
   db,
   auth,
   currentUser,
   userCollection,
-  postCollection
+  gameCollection
 }

@@ -23,7 +23,7 @@
       </b-col>
     </b-row>
     <b-row class="px-3 text-center">
-      <b-button variant="warning" size="lg">
+      <b-button @click="endTurn" variant="warning" size="lg">
         End Turn
       </b-button>
     </b-row>
@@ -37,6 +37,7 @@ export default {
     userOneCoins: Number,
     userTwoCoins: Number,
     userName: String,
+    endTurn: Function
   },
   computed: {
   },
