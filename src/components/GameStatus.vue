@@ -3,7 +3,6 @@
     <b-row class="py-5">
       <b-col>
         <b-card :title="userName" sub-title="">
-        <!-- <b-card :title="userProfile.userName" sub-title=""> -->
           <b-card-text>
             Coins:
           </b-card-text>
@@ -23,20 +22,23 @@
         </b-card>
       </b-col>
     </b-row>
+    <b-row class="px-3 text-center">
+      <b-button variant="warning" size="lg">
+        End Turn
+      </b-button>
+    </b-row>
   </div>
 </template>
 
 <script>
-// import { mapState } from "vuex"
 
 export default {
   props: {
     userOneCoins: Number,
     userTwoCoins: Number,
-    userName: String
+    userName: String,
   },
   computed: {
-    // ...mapState(["userProfile"])
   },
   methods: {
 

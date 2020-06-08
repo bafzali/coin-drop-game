@@ -6,6 +6,7 @@
           :userOneCoins="userOneCoins"
           :userTwoCoins="userTwoCoins"
           :userName="userProfile.userName"
+          :coinCountClass="this.coinCountClass"
         />
       </b-col>
       <b-col cols="8">
@@ -47,21 +48,25 @@ export default {
       this.rollResult = Math.floor((Math.random() * 6) + 1)
       this.updateGameBoard()
     },
-    clearBoard() {
-
-    },
     updateGameBoard() {
-      if(!this.isSlotFilled[0] && this.rollResult === 1) {
-        this.isSlotFilled[0] = true
-        console.log(this.isSlotFilled);
-      } else if (this.isSlotFilled[0] && this.rollResult === 1) {
-        this.isSlotFilled.forEach(element => {
-          this.isSlotFilled[element] = false
-        })
-      }
-    },
-    updateUserCoinTotal() {
+      let rollIndex = this.rollResult - 1
 
+
+      if(!this.isSlotFilled[rollIndex] && rollIndex !== 5) {
+        this.isSlotFilled[rollIndex] = true
+      } else if(this.isSlotFilled[rollIndex] && rollIndex !== 5) {
+        
+        this.isSlotFilled.forEach((element, iteration) => {
+          setTimeout(() => {
+            if(element) {
+              this.userOneCoins++
+            }
+          }, iteration*250) 
+          this.isSlotFilled=[false, false, false, false, false]
+        })
+      } else if (this.userOneCoins > 0) {
+        this.userOneCoins--
+      }
     }
   },
 }
