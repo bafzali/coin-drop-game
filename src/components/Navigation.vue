@@ -5,7 +5,7 @@
         <img src="../../public/img/icons8-stack-of-coins-48.png" alt="">
       </b-navbar-brand>
       <b-navbar-brand href="/">
-        Coin Drop Game
+        Coin Drop
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>

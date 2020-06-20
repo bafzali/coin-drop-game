@@ -2,7 +2,7 @@
   <div>
     <b-row class="py-5">
       <b-col>
-        <b-card :title="userName" sub-title="">
+        <b-card :title="ownerUserName" sub-title="">
           <b-card-text>
             Coins:
           </b-card-text>
@@ -12,7 +12,7 @@
         </b-card>
       </b-col>
       <b-col>
-        <b-card title="Opponent" sub-title="">
+        <b-card :title="opponent" sub-title="">
           <b-card-text>
             Coins:
           </b-card-text>
@@ -23,7 +23,7 @@
       </b-col>
     </b-row>
     <b-row class="px-3 text-center">
-      <b-button @click="endTurn" variant="warning" size="lg">
+      <b-button :disabled="!isUsersTurn" @click="endTurn" variant="warning" size="lg">
         End Turn
       </b-button>
     </b-row>
@@ -34,10 +34,13 @@
 
 export default {
   props: {
-    userOneCoins: Number,
-    userTwoCoins: Number,
-    userName: String,
-    endTurn: Function
+    userOneCoins: Number, // always owner of the game
+    userTwoCoins: Number, // always opponent in someone's game
+    ownerUserName: String,
+    opponent: String,
+    endTurn: Function,
+    activePlayerID: String,
+    isUsersTurn: Boolean
   },
   computed: {
   },

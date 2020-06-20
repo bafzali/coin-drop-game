@@ -9,46 +9,81 @@ Vue.use(Vuex)
 
 fbase.auth.onAuthStateChanged(user => {
   if (user) {
+    let currentGameID = window.localStorage.getItem("currentGameID")
+
     store.commit("setCurrentUser", user)
     store.dispatch("fetchUserProfile")
-  }
-
-  // update open games as they are created
-  fbase.gameCollection.orderBy("createdOn", "desc").onSnapshot(querySnapshot => {
-    let gamesArray = []
-
-    querySnapshot.forEach(doc => {
-      let game = doc.data()
-      game.id = doc.id
-      gamesArray.push(game)
+    // store.dispatch("fetchCurrentGame")
+    
+    // update open games as they are created
+    fbase.gameCollection.orderBy("createdOn", "desc").onSnapshot(querySnapshot => {
+      let gamesArray = []
+  
+      querySnapshot.forEach(doc => {
+        let game = doc.data()
+        game.id = doc.id
+  
+        if(game.ownerID !== user.uid && game.isOpen) {
+          gamesArray.push(game)
+        }
+        
+        if(game.ownerID === user.uid) {
+          store.commit("setUsersGame", game)
+        }
+  
+      })
+  
+      store.commit("setGames", gamesArray)
     })
 
-    store.commit("setGames", gamesArray)
-  })
+    fbase.gameCollection.doc(currentGameID)
+    .onSnapshot(function(doc) {
+      store.commit("setCurrentGame", doc.data())
+    })
+  }
+  
 })
+
 
 export const store = new Vuex.Store({
   state: {
     currentUser: null,
     userProfile: {},
-    // currentGame: {},
     games: [],
-    // openGameIdList: [],
-    // currentOpponent: ""
+    currentGame: {},
+    usersGame: {},
   },
   mutations: {
-    setCurrentUser(state, val) {
-      state.currentUser = val
+    setCurrentUser(state, payLoad) {
+      state.currentUser = payLoad
     },
-    setUserProfile(state, val) {
-      state.userProfile = val
+    setUserProfile(state, payLoad) {
+      state.userProfile = payLoad
     },
-    setGames(state, val) {
-      if (val) {
-        state.games = val
+    setGames(state, payLoad) {
+      if (payLoad) {
+        state.games = payLoad
       } else {
         state.games = []
       }
+    },
+    setCurrentGame(state, payLoad) {
+      state.currentGame = payLoad
+    },
+    setUsersGame(state, payLoad) {
+      state.usersGame = payLoad
+    },
+    setActivePlayerID(state, payLoad) {
+      state.currentGame.activePlayerID = payLoad
+    },
+    incrementOwnerScore(state, payLoad) {
+      state.currentGame.ownerScore += payLoad
+    },
+    incrementOpponentScore(state, payLoad) {
+      state.currentGame.opponentScore += payLoad
+    },
+    setIsSlotFilled(state, payLoad) {
+      state.currentGame.isSlotFilled = payLoad
     }
   },
   actions: {
@@ -60,6 +95,22 @@ export const store = new Vuex.Store({
       fbase.userCollection.doc(state.currentUser.uid).get()
       .then(res => {
         commit("setUserProfile", res.data())
+      }).catch(err => {
+        console.log(err);
+      })
+    }, 
+    fetchCurrentGame({ commit }) {  
+      let currentGameFromLocalStore = window.localStorage.getItem("currentGameID")
+
+      if (currentGameFromLocalStore === null || currentGameFromLocalStore === undefined) {
+        console.log("no current game saved")
+        return
+      }
+
+      fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).get()
+      .then(res => {
+        commit("setCurrentGame", res.data())
+        // console.log("Current game set. Owner: " + res.data().ownerID + ". Opponent: " + res.data().opponentID)
       }).catch(err => {
         console.log(err);
       })

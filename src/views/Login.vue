@@ -166,7 +166,6 @@ export default {
       this.performingRequest = true
       fbase.auth.signInWithEmailAndPassword(this.loginForm.email, this.loginForm.password)
       .then(user => {
-        console.log(user.user.uid);
         this.$store.commit("setCurrentUser", user.user)
         this.$store.dispatch("fetchUserProfile")
         this.performingRequest = false

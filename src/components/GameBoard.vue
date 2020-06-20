@@ -2,8 +2,10 @@
   <div>
     <b-row class="text-center py-5">
       <b-col>
-        <h3>Click the die to roll!</h3>
-        <img @click="rollDie" src="../../public/img/icons8-dice-96.png" alt="sketch of a blue die" class="game-die">
+        <h3 v-show="isUsersTurn">Click the die to roll!</h3>
+        <img v-show="isUsersTurn" @click="rollDie" src="../../public/img/icons8-dice-96.png" alt="sketch of a blue die" class="game-die">
+        <h3 v-show="!isUsersTurn">It's {{ opponent }}'s turn</h3>
+        <img v-show="!isUsersTurn" src="../../public/img/icons8-dice-96.png" alt="sketch of a blue die">
       </b-col>
       <b-col>
         <img 
@@ -61,7 +63,9 @@ export default {
   props: {
     isSlotFilled: Array,
     rollResult: Number,
-    rollDie: Function
+    rollDie: Function,
+    isUsersTurn: Boolean,
+    opponent: String
   },
   methods: {
     toggleDiceClass(index) {
