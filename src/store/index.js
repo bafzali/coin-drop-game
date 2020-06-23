@@ -38,7 +38,32 @@ fbase.auth.onAuthStateChanged(user => {
 
     fbase.gameCollection.doc(currentGameID)
     .onSnapshot(function(doc) {
-      store.commit("setCurrentGame", doc.data())
+
+      let game = doc.data()
+
+      console.log(game);
+      
+
+      if (game.isSlotFilled !== store.state.currentGame.isSlotFilled) {
+        store.commit("setIsSlotFilled", game.isSlotFilled)
+      }
+
+    // realtime update of score changes to non-active player's
+      if (game.ownerScore !== store.state.currentGame.ownerScore && store.state.currentUser.uid !== store.state.currentGame.activePlayerID) {
+        store.commit("setOwnerScore", game.ownerScore)
+      }
+      
+      if (game.opponentScore !== store.state.currentGame.opponentScore && store.state.currentUser.uid !== store.state.currentGame.activePlayerID) {
+        store.commit("setOpponentScore", game.opponentScore)
+      }
+
+    // realtime update of active player ID to non-active player's state
+      if (game.activePlayerID !== store.state.currentGame.activePlayerID && store.state.currentUser.uid !== store.state.currentGame.activePlayerID) {
+        store.commit("setActivePlayerID", game.activePlayerID)
+      }
+      
+    }, function(error) {
+      console.log(error);
     })
   }
   
@@ -69,6 +94,8 @@ export const store = new Vuex.Store({
     },
     setCurrentGame(state, payLoad) {
       state.currentGame = payLoad
+      console.log("setCurrentGame mutation ran");
+      
     },
     setUsersGame(state, payLoad) {
       state.usersGame = payLoad
@@ -79,8 +106,14 @@ export const store = new Vuex.Store({
     incrementOwnerScore(state, payLoad) {
       state.currentGame.ownerScore += payLoad
     },
+    setOwnerScore(state, payLoad) {
+      state.currentGame.ownerScore = payLoad
+    },
     incrementOpponentScore(state, payLoad) {
       state.currentGame.opponentScore += payLoad
+    },
+    setOpponentScore(state, payLoad) {
+      state.currentGame.opponentScore = payLoad
     },
     setIsSlotFilled(state, payLoad) {
       state.currentGame.isSlotFilled = payLoad
@@ -110,10 +143,13 @@ export const store = new Vuex.Store({
       fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).get()
       .then(res => {
         commit("setCurrentGame", res.data())
-        // console.log("Current game set. Owner: " + res.data().ownerID + ". Opponent: " + res.data().opponentID)
+        console.log("Current game set. Owner: " + res.data().ownerID + ". Opponent: " + res.data().opponentID)
       }).catch(err => {
         console.log(err);
       })
     }
+  },
+  getters: {
+
   }
 })

@@ -2,6 +2,7 @@
   <div class="game-container">
     <b-row>
       <b-col cols="4">
+        <p>Active player: {{ currentGame.activePlayerID }}</p>
         <GameStatus
           :userOneCoins="currentGame.ownerScore"
           :userTwoCoins="currentGame.opponentScore"
@@ -13,7 +14,7 @@
       </b-col>
       <b-col cols="8">
         <GameBoard
-          :isSlotFilled="currentGame.isSlotFilled"
+          :isSlotFilled="coinSlotArray"
           :rollDie="rollDie"
           :rollResult="rollResult"
           :isUsersTurn="isUsersTurn"
@@ -39,6 +40,7 @@ export default {
       rollResult: 0,
       isUsersTurn: null,
       currentGameID: this.$route.params.id,
+      // coinSlotArray: this.currentGame.isSlotFilled.split(",")
       // opponent: this.opponentUserName()
     }
   },
@@ -71,6 +73,9 @@ export default {
     },
     checkIsSlotFilled() {
       return this.currentGame.isSlotFilled
+    },
+    coinSlotArray: function() {
+      return this.currentGame.isSlotFilled.split(",")
     }
   },
   created() {
@@ -82,8 +87,6 @@ export default {
   },
   watch: {
     checkActivePlayer(newVal, oldVal) {
-      console.log("Active player changed from " + oldVal + " to " + newVal);
-
       if(newVal === this.currentUser.uid) {
         this.isUsersTurn = true
       } else {
@@ -93,31 +96,39 @@ export default {
       fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
         activePlayerID: newVal 
       }).then(() => {
-        this.$store.dispatch("fetchCurrentGame")
+        console.log("Active player changed from " + oldVal + " to " + newVal);
+      }).catch((err) => {
+        console.log(err);
       })
     },
-    // checkIsSlotFilled(newVal) {
-    //   // console.log(newVal);
+    checkIsSlotFilled(newVal) {
+      console.log("Watcher: " + newVal);
       
-    //   fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
-    //     isSlotFilled: newVal 
-    //   }).then(() => {
-    //     this.$store.dispatch("fetchCurrentGame")
-    //   })
-    //   // this.updateGameFieldInFirestore("isSlotFilled", newVal)
-    // },
+      fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
+        isSlotFilled: newVal 
+      }).then(() => {
+        console.log("slots updated to firebase");
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
     checkOwnerScore(newVal) {
       fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
         ownerScore: newVal 
       }).then(() => {
-        this.$store.dispatch("fetchCurrentGame")
+        console.log("Owner's score updated");
+      }).catch((err) => {
+        console.log(err);
       })
     },
     checkOpponentScore(newVal) {
       fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
         opponentScore: newVal 
-      }).then(() => {
-        this.$store.dispatch("fetchCurrentGame")
+      })
+      .then(() => {
+        console.log("Opponent's score updated");
+      }).catch((err) => {
+        console.log(err);
       })
     },
   },
@@ -126,35 +137,34 @@ export default {
       let rollResult = Math.floor((Math.random() * 6) + 1)
       this.rollResult = rollResult
       console.log(rollResult);
-      this.updateScore(rollResult)
-    },
-    updateScore(rollResult) {
       let rollIndex = rollResult - 1
+      this.updateScore(rollIndex)
+    },
+    updateScore(rollIndex) {
       let scoreChange = 0
-      let coinSlotArray = this.currentGame.isSlotFilled
-      console.log("Initial Coin Slot Array: " + coinSlotArray);
-      
+      let coinSlotArray = this.currentGame.isSlotFilled.split(",")
 
-      if(!coinSlotArray[rollIndex] && rollIndex < 5) {
-        coinSlotArray[rollIndex] = true
+      if(coinSlotArray[rollIndex] === "false" && rollIndex < 5) {
+
+        coinSlotArray[rollIndex] = "true"
         scoreChange--
-        console.log("Modified Coin Slot Array: " + coinSlotArray);
-        this.$store.commit("setIsSlotFilled", coinSlotArray)
-      } else if(coinSlotArray[rollIndex] && rollIndex < 5) {
+        
+      } else if(coinSlotArray[rollIndex] === "true" && rollIndex < 5) {
         
         coinSlotArray.forEach((element) => {
-          if(element) {
+          if(element === "true") {
             scoreChange++
           }
         })
 
-        coinSlotArray=[false, false, false, false, false]
-        this.$store.commit("setIsSlotFilled", coinSlotArray)     
-
-        // this.isUsersTurn = !this.isUsersTurn
+        coinSlotArray=["false", "false", "false", "false", "false"]
+        
+        // this.endTurn()
       } else {
         scoreChange--
       }
+
+      this.$store.commit("setIsSlotFilled", coinSlotArray.toString())
       
       if (this.currentGame.ownerID === this.currentUser.uid) {
         this.$store.commit("incrementOwnerScore", scoreChange)

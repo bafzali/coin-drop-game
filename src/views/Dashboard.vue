@@ -71,7 +71,7 @@ export default {
         opponentScore: 10,
         activePlayerID: this.currentUser.uid,
         isOpen: true,
-        isSlotFilled: [false, false, false, false, false]
+        isSlotFilled: "false,false,false,false,false"
       }).then(() => {
         console.log("game created")  
       }).catch(err => {
