@@ -20,31 +20,31 @@
       <b-col>
         <div class="slot-number">
           <h3>1</h3>
-          <img v-if="isSlotFilled[0]" src="../../public/img/icons8-coin-96.png" alt="">
+          <img v-if="isSlotFilled[0] === 'true'" src="../../public/img/icons8-coin-96.png" alt="">
         </div>
       </b-col>
       <b-col>
         <div class="slot-number">
           <h3>2</h3>
-          <img v-if="isSlotFilled[1]" src="../../public/img/icons8-coin-96.png" alt="">
+          <img v-if="isSlotFilled[1] === 'true'" src="../../public/img/icons8-coin-96.png" alt="">
         </div>
       </b-col>
       <b-col>
         <div class="slot-number">
           <h3>3</h3>
-          <img v-if="isSlotFilled[2]" src="../../public/img/icons8-coin-96.png" alt="">
+          <img v-if="isSlotFilled[2] === 'true'" src="../../public/img/icons8-coin-96.png" alt="">
         </div>
       </b-col>
       <b-col>
         <div class="slot-number">
           <h3>4</h3>
-          <img v-if="isSlotFilled[3]" src="../../public/img/icons8-coin-96.png" alt="">
+          <img v-if="isSlotFilled[3] === 'true'" src="../../public/img/icons8-coin-96.png" alt="">
         </div>
       </b-col>
       <b-col>
         <div class="slot-number">
           <h3>5</h3>
-          <img v-if="isSlotFilled[4]" src="../../public/img/icons8-coin-96.png" alt="">
+          <img v-if="isSlotFilled[4] === 'true'" src="../../public/img/icons8-coin-96.png" alt="">
         </div>
       </b-col>
     </b-row>
