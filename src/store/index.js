@@ -39,26 +39,23 @@ fbase.auth.onAuthStateChanged(user => {
     fbase.gameCollection.doc(currentGameID)
     .onSnapshot(function(doc) {
 
-      let game = doc.data()
-
-      console.log(game);
-      
+      let game = doc.data()      
 
       if (game.isSlotFilled !== store.state.currentGame.isSlotFilled) {
         store.commit("setIsSlotFilled", game.isSlotFilled)
       }
 
-    // realtime update of score changes to non-active player's
-      if (game.ownerScore !== store.state.currentGame.ownerScore && store.state.currentUser.uid !== store.state.currentGame.activePlayerID) {
+    // realtime update of score changes
+      if (game.ownerScore !== store.state.currentGame.ownerScore) {
         store.commit("setOwnerScore", game.ownerScore)
       }
       
-      if (game.opponentScore !== store.state.currentGame.opponentScore && store.state.currentUser.uid !== store.state.currentGame.activePlayerID) {
+      if (game.opponentScore !== store.state.currentGame.opponentScore) {
         store.commit("setOpponentScore", game.opponentScore)
       }
 
-    // realtime update of active player ID to non-active player's state
-      if (game.activePlayerID !== store.state.currentGame.activePlayerID && store.state.currentUser.uid !== store.state.currentGame.activePlayerID) {
+    // realtime update of active player ID
+      if (game.activePlayerID !== store.state.currentGame.activePlayerID) {
         store.commit("setActivePlayerID", game.activePlayerID)
       }
       
@@ -93,9 +90,7 @@ export const store = new Vuex.Store({
       }
     },
     setCurrentGame(state, payLoad) {
-      state.currentGame = payLoad
-      console.log("setCurrentGame mutation ran");
-      
+      state.currentGame = payLoad      
     },
     setUsersGame(state, payLoad) {
       state.usersGame = payLoad
@@ -103,15 +98,15 @@ export const store = new Vuex.Store({
     setActivePlayerID(state, payLoad) {
       state.currentGame.activePlayerID = payLoad
     },
-    incrementOwnerScore(state, payLoad) {
-      state.currentGame.ownerScore += payLoad
-    },
+    // incrementOwnerScore(state, payLoad) {
+    //   state.currentGame.ownerScore += payLoad
+    // },
     setOwnerScore(state, payLoad) {
       state.currentGame.ownerScore = payLoad
     },
-    incrementOpponentScore(state, payLoad) {
-      state.currentGame.opponentScore += payLoad
-    },
+    // incrementOpponentScore(state, payLoad) {
+    //   state.currentGame.opponentScore += payLoad
+    // },
     setOpponentScore(state, payLoad) {
       state.currentGame.opponentScore = payLoad
     },
@@ -148,8 +143,5 @@ export const store = new Vuex.Store({
         console.log(err);
       })
     }
-  },
-  getters: {
-
   }
 })
