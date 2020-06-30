@@ -10,6 +10,7 @@
           :opponent="currentGame.opponent"
           :endTurn="endTurn"
           :isUsersTurn="isUsersTurn"
+          :userHasRolledOnce="userHasRolledOnce"
         />
       </b-col>
       <b-col cols="8">
@@ -39,6 +40,7 @@ export default {
       rollResult: 0,
       isUsersTurn: null,
       currentGameID: this.$route.params.id,
+      userHasRolledOnce: false
     }
   },
   components: {
@@ -95,6 +97,8 @@ export default {
         console.log(scoreChange + " THIRD | scoreChange set");
 
         this.processScoreChange(scoreChange)
+
+        this.userHasRolledOnce = true
         
       } catch(error) {
         console.log(error);
@@ -171,6 +175,7 @@ export default {
     endTurn() {
       if (this.currentUser.uid === this.currentGame.ownerID) {
         console.log("FIFTH | End turn, opponentID set to active");
+        this.userHasRolledOnce = false
 
         fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
           activePlayerID: this.currentGame.opponentID 
@@ -182,6 +187,7 @@ export default {
         })
       } else {
         console.log("FIFTH | End turn, ownerID set to active");
+        this.userHasRolledOnce = false
 
         fbase.gameCollection.doc(window.localStorage.getItem("currentGameID")).update({
           activePlayerID: this.currentGame.ownerID 

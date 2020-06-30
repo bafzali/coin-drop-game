@@ -23,7 +23,7 @@
       </b-col>
     </b-row>
     <b-row class="px-3 text-center">
-      <b-button :disabled="!isUsersTurn" @click="endTurn" variant="warning" size="lg">
+      <b-button :disabled="!isUsersTurn || !userHasRolledOnce" @click="endTurn" variant="warning" size="lg">
         End Turn
       </b-button>
     </b-row>
@@ -40,7 +40,8 @@ export default {
     opponent: String,
     endTurn: Function,
     activePlayerID: String,
-    isUsersTurn: Boolean
+    isUsersTurn: Boolean,
+    userHasRolledOnce: Boolean
   },
   computed: {
   },
